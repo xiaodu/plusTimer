@@ -77,7 +77,7 @@ android {
 }
 
 dependencies {
-    compile 'com.jjoe64:graphview:3.+'
+    compile 'com.jjoe64:graphview:4.+'
     compile 'com.android.support:appcompat-v7:21.+'
     compile 'com.android.support:support-v13:21.+'
     compile 'com.android.support:recyclerview-v7:21.+'
