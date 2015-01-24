@@ -4,7 +4,6 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.view.MenuItemCompat;
@@ -34,7 +33,8 @@ import com.pluscubed.plustimer.R;
 import com.pluscubed.plustimer.model.PuzzleType;
 import com.pluscubed.plustimer.model.Session;
 import com.pluscubed.plustimer.model.Solve;
-import com.pluscubed.plustimer.utils.Util;
+import com.pluscubed.plustimer.utils.PrefUtils;
+import com.pluscubed.plustimer.utils.Utils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -149,8 +149,8 @@ public class HistorySessionListFragment extends ListFragment {
         mGraph = new GraphView(getActivity());
         LinearLayout.LayoutParams layoutParams = new LinearLayout
                 .LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
-                Util.convertDpToPx(getActivity(), 220));
-        layoutParams.setMargins(0, 0, 0, Util.convertDpToPx(getActivity(), 20));
+                Utils.convertDpToPx(getActivity(), 220));
+        layoutParams.setMargins(0, 0, 0, Utils.convertDpToPx(getActivity(), 20));
         mGraph.setLayoutParams(layoutParams);
         mGraph.getLegendRenderer().setVisible(true);
         mGraph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.BOTTOM);
@@ -161,7 +161,7 @@ public class HistorySessionListFragment extends ListFragment {
                 if (isValueX) {
                     return super.formatLabel(value, true);
                 } else {
-                    return Util.timeStringFromNs((long) value, mMillisecondsEnabled);
+                    return Utils.timeStringFromNs((long) value, mMillisecondsEnabled);
                 }
             }
         });
@@ -209,13 +209,13 @@ public class HistorySessionListFragment extends ListFragment {
             //Get best solves of each history session and add to list
             ArrayList<Solve> bestSolvesOfSessionsArray = new ArrayList<>();
             for (Session session : historySessions) {
-                bestSolvesOfSessionsArray.add(Util.getBestSolveOfList(session
+                bestSolvesOfSessionsArray.add(Utils.getBestSolveOfList(session
                         .getSolves()));
             }
 
             //Add PB of all historySessions
             s.append(getString(R.string.pb)).append(": ")
-                    .append(Util.getBestSolveOfList(bestSolvesOfSessionsArray)
+                    .append(Utils.getBestSolveOfList(bestSolvesOfSessionsArray)
                             .getTimeString(mMillisecondsEnabled));
 
             //Add PB of Ao5,12,50,100,1000
@@ -292,9 +292,9 @@ public class HistorySessionListFragment extends ListFragment {
                     LineGraphSeries<DataPoint> averageSeries = new LineGraphSeries<>(
                             averageSeriesDataPoints
                     );
-                    averageSeries.setThickness(Util.convertDpToPx(getActivity(), 2));
+                    averageSeries.setThickness(Utils.convertDpToPx(getActivity(), 2));
                     averageSeries.setDrawDataPoints(true);
-                    averageSeries.setDataPointsRadius(Util.convertDpToPx(getActivity(), 3));
+                    averageSeries.setDataPointsRadius(Utils.convertDpToPx(getActivity(), 3));
                     averageSeries.setTitle(String.format(getString(R.string.bao), bestAveragesOfSessions.keyAt(i)));
                     averageSeries.setColor(lineColor);
                     bestAverageGraphViewSeries.add(averageSeries);
@@ -308,10 +308,10 @@ public class HistorySessionListFragment extends ListFragment {
             SparseArray<Long> bestTimesOfSessionsArray = new SparseArray<>();
             for (int i = 0; i < historySessions.size(); i++) {
                 Session session = historySessions.get(i);
-                if (Util.getBestSolveOfList(session.getSolves()).getPenalty() != Solve.Penalty.DNF) {
+                if (Utils.getBestSolveOfList(session.getSolves()).getPenalty() != Solve.Penalty.DNF) {
                     bestTimesOfSessionsArray.put(
                             i,
-                            Util.getBestSolveOfList(session.getSolves())
+                            Utils.getBestSolveOfList(session.getSolves())
                                     .getTimeTwo()
                     );
                 }
@@ -329,9 +329,9 @@ public class HistorySessionListFragment extends ListFragment {
                     bestTimesSeriesDataPoints
             );
 
-            bestTimesSeries.setThickness(Util.convertDpToPx(getActivity(), 2));
+            bestTimesSeries.setThickness(Utils.convertDpToPx(getActivity(), 2));
             bestTimesSeries.setDrawDataPoints(true);
-            bestTimesSeries.setDataPointsRadius(Util.convertDpToPx(getActivity(), 3));
+            bestTimesSeries.setDataPointsRadius(Utils.convertDpToPx(getActivity(), 3));
             bestTimesSeries.setTitle(String.format(getString(R.string.best_times)));
             bestTimesSeries.setColor(Color.BLUE);
 
@@ -448,7 +448,7 @@ public class HistorySessionListFragment extends ListFragment {
                             .append(String.format(getString(R.string.ao),
                                     number)).append(": ")
                             .append(bestAverage == Long.MAX_VALUE ? "DNF"
-                                    : Util.timeStringFromNs(bestAverage,
+                                    : Utils.timeStringFromNs(bestAverage,
                                     mMillisecondsEnabled));
                 }
             }
@@ -512,9 +512,7 @@ public class HistorySessionListFragment extends ListFragment {
     }
 
     private void initSharedPrefs() {
-        mMillisecondsEnabled = PreferenceManager.getDefaultSharedPreferences
-                (getActivity()).getBoolean(SettingsActivity
-                .PREF_MILLISECONDS_CHECKBOX, true);
+        mMillisecondsEnabled = PrefUtils.isDisplayMillisecondsEnabled(getActivity());
     }
 
     @Override
